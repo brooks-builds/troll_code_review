@@ -32,7 +32,7 @@ This agent could help with that, but is actually going to troll me instead. Howe
 We are shifting Code review to the left. That means that the bot will focus on helping us see mistakes, think about things commonly forgotten, and keep us accountable. It will also be a pair, so we can use it as a rubber duck.
 
 - [ ] Manage context
-  - [ ] Visualize how much context we have available
+  - [x] Visualize how much context we have available
   - [ ] Visualize how much context is being used
   - [ ] Command to reset the context
 
@@ -54,3 +54,9 @@ We are shifting Code review to the left. That means that the bot will focus on h
   - [ ] Linting passes
   - [ ] Document the changes
   - [ ] Celebration
+
+## Polish
+
+- [ ] Context usage
+  - [ ] Use a visual percentage bar to show context usage
+  - [ ] User color with context usage

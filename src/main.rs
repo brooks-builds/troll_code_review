@@ -25,6 +25,7 @@ async fn main() -> Result<()> {
     let api_base_url = env::var("LLM_BASE_URL")?;
     let api_key =
         env::var("LLM_API_KEY").context("Loading LLM API KEY from environment variable")?;
+    let max_context_length = env::var("LLM_MODEL_CONTEXT")?.parse::<u32>()?;
 
     spawn(async move {
         let tools = vec![
@@ -40,6 +41,7 @@ async fn main() -> Result<()> {
             api_base_url,
             api_key,
             tools,
+            max_context_length,
         )
         .await
         {
@@ -62,7 +64,10 @@ async fn main() -> Result<()> {
                 break;
             }
 
-            println!("AI::{ai_response:#}");
+            println!(
+                "AI ({}/{max_context_length})::{ai_response:#}",
+                ai_response.context_length
+            );
             say_outloud(format!("{ai_response}")).context("Speaking ai response out loud")?;
         }
     }
