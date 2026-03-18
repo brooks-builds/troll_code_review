@@ -7,8 +7,6 @@ use std::{
     env,
     io::{Write, stdin, stdout},
     process::Command,
-    thread::sleep,
-    time::Duration,
 };
 use tokio::{spawn, sync::mpsc::unbounded_channel};
 
@@ -41,7 +39,6 @@ async fn main() -> Result<()> {
             api_base_url,
             api_key,
             tools,
-            max_context_length,
         )
         .await
         {
@@ -64,9 +61,9 @@ async fn main() -> Result<()> {
                 break;
             }
 
+            let context_used_bar = bb_ai::context_usage_bar(ai_response.context_length, max_context_length, 10);
             println!(
-                "AI ({}/{max_context_length})::{ai_response:#}",
-                ai_response.context_length
+                "AI [{context_used_bar}]::{ai_response:#}",
             );
             say_outloud(format!("{ai_response}")).context("Speaking ai response out loud")?;
         }

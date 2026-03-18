@@ -33,7 +33,7 @@ We are shifting Code review to the left. That means that the bot will focus on h
 
 - [ ] Manage context
   - [x] Visualize how much context we have available
-  - [ ] Visualize how much context is being used
+  - [x] Visualize how much context is being used
   - [ ] Command to reset the context
 
 - [ ] Set up 'team' norms
@@ -57,6 +57,6 @@ We are shifting Code review to the left. That means that the bot will focus on h
 
 ## Polish
 
-- [ ] Context usage
-  - [ ] Use a visual percentage bar to show context usage
-  - [ ] User color with context usage
+- [x] Context usage
+  - [x] Use a visual percentage bar to show context usage
+  - [x] User color with context usage
