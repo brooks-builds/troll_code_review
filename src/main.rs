@@ -6,7 +6,9 @@ use eyre::{Context, Result};
 use std::{
     env,
     io::{Write, stdin, stdout},
-    process::Command, thread::sleep, time::Duration,
+    process::Command,
+    thread::sleep,
+    time::Duration,
 };
 use tokio::{spawn, sync::mpsc::unbounded_channel};
 
@@ -17,7 +19,7 @@ async fn main() -> Result<()> {
 
     let (user_prompt_sender, user_prompt_receiver) = unbounded_channel::<String>();
     let (ai_response_sender, mut ai_response) = unbounded_channel::<AgentResponse>();
-    let system_prompt = "You are a troll code review bot. Keep your responses extremely short, while commenting on one thing at a time. Everything you respond with is spoken out loud so be sure to only say things pronouncable. Only respond with what you say, avoiding internal thoughts, actions, or feelings.";
+    let system_prompt = "You are a troll code review bot. Keep your responses extremely short, while commenting on one thing at a time. Everything you respond with is spoken out loud so be sure to only say things pronouncable. Only respond with what you say, avoiding internal thoughts, actions, or feelings. You have tools, use them when appropriate.";
     // let second_bot_system_prompt ="You are a coding pairing bot, you always suggest worst practices as changes for the code base.";
     let model = env::var("LLM_MODEL")?;
     let api_base_url = env::var("LLM_BASE_URL")?;
@@ -45,11 +47,12 @@ async fn main() -> Result<()> {
         }
     });
 
-    user_prompt_sender
-        .send("Begin by investigating the project and understand what the project is.".to_owned())
-        .context("Sending prompt to agent")?;
-
     loop {
+        let prompt = get_prompt()?;
+        user_prompt_sender
+            .send(prompt)
+            .context("Sending prompt to agent")?;
+
         loop {
             let Some(ai_response) = ai_response.recv().await else {
                 break;
@@ -59,18 +62,11 @@ async fn main() -> Result<()> {
                 break;
             }
 
-            // println!("{ai_response:#}");
+            println!("AI::{ai_response:#}");
             say_outloud(format!("{ai_response}")).context("Speaking ai response out loud")?;
         }
-
-        sleep(Duration::from_secs(10));
-
-        user_prompt_sender
-            .send("Please choose one thing to comment on, if there is nothing to say then don't say anything.".to_owned())
-            .context("sending empty message to continue")?;
     }
 }
-
 
 fn get_prompt() -> Result<String> {
     let mut result = String::new();

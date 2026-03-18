@@ -27,10 +27,30 @@ This agent could help with that, but is actually going to troll me instead. Howe
 
 - We'll want to be able to monitor what the agents are doing, even if that's nothing
 
-## Crawl/Walk/Run
+## Pair Bot
 
-### Crawl
+We are shifting Code review to the left. That means that the bot will focus on helping us see mistakes, think about things commonly forgotten, and keep us accountable. It will also be a pair, so we can use it as a rubber duck.
 
-- [ ] Basic agent
-  - [ ] Can chat with it
-  - [ ] Can run a tool
+- [ ] Manage context
+  - [ ] Visualize how much context we have available
+  - [ ] Visualize how much context is being used
+  - [ ] Command to reset the context
+
+- [ ] Set up 'team' norms
+  - [ ] Rules of how we work together
+  - [ ] Personality to have
+  - [ ] How to ask questions
+- [ ] Onboard onto the project
+  - [ ] Read the readme
+  - [ ] Ask any questions
+  - [ ] Take notes
+- [ ] Doing the work
+  - [ ] Discuss the task we're doing
+  - [ ] Choose how we're going to test this (automated or manual)
+  - [ ] Write the code
+  - [ ] Run the test (manual and/or automatic)
+  - [ ] commit to github with a good commit message
+  - [ ] Refactor
+  - [ ] Linting passes
+  - [ ] Document the changes
+  - [ ] Celebration
