@@ -6,7 +6,7 @@ use eyre::{Context, Result};
 use std::{
     env,
     io::{Write, stdin, stdout},
-    process::Command,
+    process::Command, thread::sleep, time::Duration,
 };
 use tokio::{spawn, sync::mpsc::unbounded_channel};
 
@@ -17,10 +17,10 @@ async fn main() -> Result<()> {
 
     let (user_prompt_sender, user_prompt_receiver) = unbounded_channel::<String>();
     let (ai_response_sender, mut ai_response) = unbounded_channel::<AgentResponse>();
-    let system_prompt = "You are a pair bot, autonomously use tools to act as QA for the project you are in. Be less verbose.";
+    let system_prompt = "You are a troll code review bot. Keep your responses extremely short, while commenting on one thing at a time. Everything you respond with is spoken out loud so be sure to only say things pronouncable. Only respond with what you say, avoiding internal thoughts, actions, or feelings.";
     // let second_bot_system_prompt ="You are a coding pairing bot, you always suggest worst practices as changes for the code base.";
-    let model = "anthropic/claude-haiku-4.5";
-    let api_base_url = "https://openrouter.ai/api/v1";
+    let model = env::var("LLM_MODEL")?;
+    let api_base_url = env::var("LLM_BASE_URL")?;
     let api_key =
         env::var("LLM_API_KEY").context("Loading LLM API KEY from environment variable")?;
 
@@ -46,7 +46,7 @@ async fn main() -> Result<()> {
     });
 
     user_prompt_sender
-        .send("You are active. Use your tools or request a tool if it doesn't exist.".to_owned())
+        .send("Begin by investigating the project and understand what the project is.".to_owned())
         .context("Sending prompt to agent")?;
 
     loop {
@@ -63,11 +63,14 @@ async fn main() -> Result<()> {
             say_outloud(format!("{ai_response}")).context("Speaking ai response out loud")?;
         }
 
+        sleep(Duration::from_secs(10));
+
         user_prompt_sender
-            .send("".to_owned())
+            .send("Please choose one thing to comment on, if there is nothing to say then don't say anything.".to_owned())
             .context("sending empty message to continue")?;
     }
 }
+
 
 fn get_prompt() -> Result<String> {
     let mut result = String::new();
