@@ -35,6 +35,7 @@ We are shifting Code review to the left. That means that the bot will focus on h
   - [x] Visualize how much context we have available
   - [x] Visualize how much context is being used
   - [ ] Command to reset the context
+- [ ] Visualize how much the session is costing
 
 - [ ] Set up 'team' norms
   - [ ] Rules of how we work together
@@ -60,3 +61,4 @@ We are shifting Code review to the left. That means that the bot will focus on h
 - [x] Context usage
   - [x] Use a visual percentage bar to show context usage
   - [x] User color with context usage
+- [ ] Create Anathema frontend for the pair bot
