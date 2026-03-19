@@ -1,13 +1,17 @@
-mod prompt;
 mod output;
+mod prompt;
 
-use std::env;
-use bb_ai::{AgentResponse, tools::{BBTool, read_file::ReadFileTool}};
+use bb_ai::{
+    AgentResponse,
+    ai_command::BBAiCommand,
+    tools::{BBTool, read_file::ReadFileTool},
+};
 use eyre::{Context, Result};
+use std::env;
 use tokio::{spawn, sync::mpsc::unbounded_channel};
 
 pub async fn run() -> Result<()> {
-    let (user_prompt_sender, user_prompt_receiver) = unbounded_channel::<String>();
+    let (user_prompt_sender, user_prompt_receiver) = unbounded_channel::<BBAiCommand>();
     let (ai_response_sender, mut ai_response) = unbounded_channel::<AgentResponse>();
     let system_prompt = "You are a troll code review bot. Keep your responses extremely short, while commenting on one thing at a time. Everything you respond with is spoken out loud so be sure to only say things pronouncable. Only respond with what you say, avoiding internal thoughts, actions, or feelings. You have tools, and may use them as much as needed.";
     // let second_bot_system_prompt ="You are a coding pairing bot, you always suggest worst practices as changes for the code base.";
@@ -39,10 +43,18 @@ pub async fn run() -> Result<()> {
     });
 
     loop {
-        let prompt = prompt::get_prompt()?;
-        user_prompt_sender
-            .send(prompt)
-            .context("Sending prompt to agent")?;
+        match prompt::get_prompt()? {
+            prompt::Command::Prompt(prompt) => {
+                user_prompt_sender
+                    .send(bb_ai::ai_command::BBAiCommand::Prompt(prompt))
+                    .context("Sending prompt to agent")?;
+            }
+            prompt::Command::ResetContext => {
+                user_prompt_sender
+                .send(BBAiCommand::ResetContext)
+                .context("Resetting context")?},
+            prompt::Command::Nothing => continue,
+        }
 
         loop {
             let Some(ai_response) = ai_response.recv().await else {
@@ -53,12 +65,11 @@ pub async fn run() -> Result<()> {
                 break;
             }
 
-            let context_used_bar = bb_ai::context_usage_bar(ai_response.context_length, max_context_length, 10);
-            println!(
-                "AI [{context_used_bar}]::{ai_response:#}",
-            );
-            output::say_outloud(format!("{ai_response}")).context("Speaking ai response out loud")?;
+            let context_used_bar =
+                bb_ai::context_usage_bar(ai_response.context_length, max_context_length, 10);
+            println!("AI [{context_used_bar}]::{ai_response:#}",);
+            output::say_outloud(format!("{ai_response}"))
+                .context("Speaking ai response out loud")?;
         }
     }
-    
 }
